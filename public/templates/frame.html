@@ -1,0 +1,54 @@
+<header id="top-panel">
+	<audio ng-src="{{charts.current.url}}" id="player" preload></audio>
+	<div class="player">
+		<div class="control play" ng-class="{'active': charts.playing}">
+			<a href="" ng-hide="charts.playing" ng-click="charts.play()"><i class="icon ion-play"></i></a>
+			<a href="" ng-show="charts.playing" ng-click="charts.pause()"><i class="icon ion-pause"></i></a>
+		</div>
+		<div class="control prev">
+			<a href="" ng-hide="!charts.current.index" ng-click="charts.prev()"><i class="icon ion-skip-backward"></i></a>
+
+			<a  ng-show="!charts.current.index"><i class="icon ion-skip-backward"></i></a>
+		</div>
+		<div class="control next">
+			<a href="" ng-click="charts.next()" ng-hide="charts.current.index + 1 >= charts.items[charts.id].tracks.length"><i class="icon ion-skip-forward"></i></a>
+
+			<a ng-show="charts.current.index + 1 >= charts.items[charts.id].tracks.length"><i class="icon ion-skip-forward" ></i></a>
+		</div>
+		<div class="control position">
+			<input id="seek" type="range" min="0" max="0" value="0" ng-disabled="charts.current.index==undefined">
+		</div>
+		<div class="control volume">
+			<input id="volume" type="range" min="0" max="10" value="10">
+		</div>
+	</div>
+</header>
+
+<main role="main">
+	<section class="playlist" ng-if="charts.tracks">
+		<!-- | orderBy:charts.sort:charts.sortDirection-->
+		<article bindonce ng-repeat="(key,card) in charts.tracks" class="item item-status-{{card.status}}" ng-class="{'active': charts.current.index == key}"><div class="item-wrap">
+			<div class="about">
+				<div class="actions">
+					<a ng-show="card.buy" ng-href="{{card.buy}}" target="_blank" title="Купить трек"><i class="icon ion-bag"></i></a>
+					<!--a href=""><i class="icon ion-arrow-down-c"></i></a-->
+					<a href="" title="Добавить в аудиозаписи (Вконтакте)" ng-show="card.vk.aid" ng-click="charts.addToVk(key)"><i class="icon ion-plus-round"></i></a>
+				</div>
+				<div class="warning">
+					<span class="notrack">Недоступно</span>
+				</div>
+				<div class="duration" ng-show="card.duration">
+					{{card.duration|duration}}
+				</div>
+				<div class="title">
+					<span class="artist" bo-text="card.artist"></span> &mdash; <span bo-text="card.title"></span>
+				</div>
+			</div>
+		</div><a href="" ng-click="charts.open(key)" class="link"></a></article>
+
+	</section>
+
+	<div ng-hide="charts.tracks">
+		<b>На этой странице песен не найдено!</b>
+	</div>
+</main>

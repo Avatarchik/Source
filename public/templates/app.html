@@ -1,0 +1,338 @@
+<div class="view-state-{{charts.view}}">
+
+	<aside ng-class="{'loading': charts.loading}">
+		<div class="wrap">
+			<h1>
+				Что будем слушать?
+
+				<span class="tabs">
+					<a href="" class="ajaxed" ng-class="{'active' : charts.tab==0}" ng-click="charts.tab=0">Чарты</a>
+					/
+					<a href="" class="ajaxed" ng-class="{'active' : charts.tab==1}" ng-click="charts.tab=1">Исполнители</a>
+					<span ng-show="lastFm.currentArtist.name">
+						/
+						<a href="" class="ajaxed" ng-class="{'active' : charts.tab==2}" ng-click="charts.tab=2" ng-class="{'active' : charts.tab==2}">{{lastFm.currentArtist.name}}</a>
+					</span>
+				</span>
+			</h1>
+
+			<!--Charts-->
+			<div class="table charts-changer" ng-if="charts.tab==0">
+				<div class="cell charts-filter">
+					<div class="nano" nano-scroller="1">
+						<div class="nano-content">
+							<div class="charts-filter-wrap">
+								<h2>Найти чарт</h2>
+
+								<!--form>
+									<input type="search" ng-model="charts.filter.title" placeholder="По заголовку..." />
+								</form-->
+
+								<div class="tags country">
+									<a href="" class="tag" ng-class="{'active': !charts.filter.country}" ng-click="charts.setChartsFilter('country','')">Все страны</a><a href="" class="tag" bindonce ng-repeat="tag in charts.countries" bo-text="tag" ng-click="charts.setChartsFilter('country',tag)" ng-class="{'active': charts.filter.country==tag}"></a>
+								</div>
+
+								<div class="tags site">
+									<a href="" class="tag" ng-class="{'active': !charts.filter.code}" ng-click="charts.setChartsFilter('code','')">Все источники</a><a href="" class="tag" bindonce ng-repeat="tag in charts.sites" bo-text="tag" ng-click="charts.setChartsFilter('code',tag)" ng-class="{'active': charts.filter.code==tag}"></a>
+								</div>
+
+								<div class="tags">
+									<a href="" class="tag" ng-class="{'active': !charts.filter.tags}" ng-click="charts.setChartsFilter('tags','')">Любой жанр</a><a href="" class="tag" bindonce ng-repeat="tag in charts.tags" bo-text="tag" ng-click="charts.setChartsFilter('tags',tag)" ng-class="{'active': charts.filter.tags==tag}"></a>
+								</div>
+
+								<br>
+								<span class="smallCopy">Чарты обновляются ежедневно. Нет вашего любимого? Напишите нам!</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="cell space"></div>
+
+				<div class="cell charts-table">
+					<!-- Charts list -->
+					<div class="charts-table-wrap nano" nano-scroller="1">
+						<div class="nano-content">
+						<div class="charts-list">
+							<a href="" class="chart-item" bindonce ng-repeat="item in charts.items | filter: charts.filter" ng-class="{'active':item._id == charts.chart._id}" ng-click="charts.id = item._id; charts.openChart(true);">
+								<div class="table size-max">
+									<div class="cell cover"><div style="position:relative;height: 100%;">
+										<div class="covers">
+											<div class="cover-art-single" bo-style="{'background-image': 'url('+item.arts[0]+')'}"></div>
+										</div>
+										<img class="favicon" bo-src="'http://favicon.yandex.net/favicon/'+item.domain" />
+									</div></div>
+									<div class="cell about">
+										<div class="status"><i class="icon ion-play"></i></div>
+										<div class="title" bo-text="item.title"></div>
+										<div class="tags">
+											<span class="tag" bindonce ng-repeat="tag in item.tags" bo-text="tag"></span>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+
+
+
+			<!--artists-->
+			<div class="table charts-changer" ng-if="charts.tab==1">
+				<div class="cell charts-filter">
+					<div class="nano" nano-scroller="1">
+						<div class="nano-content">
+							<div class="charts-filter-wrap">
+								<menu class="selector">
+									<li class="item" ng-class="{'active' : lastFm.tab==0}">
+										<a href="" class="title" ng-click="lastFm.tab=0">
+											<i class="arrow-icon icon ion-arrow-down-b"></i>
+											<i class="arrow-icon icon ion-arrow-left-b"></i>
+											<i class="core-icon icon ion-arrow-graph-up-right"></i> Рейтинги
+										</a>
+										<ul class="childs">
+											<li ng-class="{'active':lastFm.ratingFilter==0}"><a href="" ng-click="lastFm.load()">Популярные в мире</a></li>
+											<li ng-class="{'active':lastFm.ratingFilter==1}"><a href="" ng-click="lastFm.load(1)">Восходящие звезды</a></li>
+											<li ng-class="{'active':lastFm.ratingFilter==2}"><a href="" ng-click="lastFm.load(2)">Популярные в России</a></li>
+										</ul>
+									</li>
+									<li class="item" ng-class="{'active' : lastFm.tab=='artist'}">
+										<a href="" class="title" ng-click="lastFm.tab='artist'">
+											<i class="arrow-icon icon ion-arrow-down-b"></i>
+											<i class="arrow-icon icon ion-arrow-left-b"></i>
+											<i class="core-icon icon ion-search"></i> Найти
+										</a>
+										<form class="childs" ng-submit="lastFm.searchArtist()">
+											<input type="search" bindonce="lastFm.artists[0].name" bo-attr bo-attr-placeholder="'Например '+lastFm.artists[0].name" autofocus ng-model="lastFm.search.artist" />
+										</form>
+									</li>
+									<li class="item" ng-class="{'active' : lastFm.tab=='genre'}">
+										<a href="" class="title" ng-click="lastFm.tab='genre'">
+											<i class="arrow-icon icon ion-arrow-down-b"></i>
+											<i class="arrow-icon icon ion-arrow-left-b"></i>
+											<i class="core-icon icon ion-pricetags"></i> Жанры
+										</a>
+										<form class="childs" ng-submit="lastFm.searchArtist()">
+											<input type="search" list="genrePopupalList" placeholder="Например {{lastFm.tags[0]}}" autofocus ng-model="lastFm.search.genre" />
+											<datalist id="genrePopupalList">
+												<option bindonce ng-repeat="tag in lastFm.tags" bo-attr bo-attr-value="tag"></option>
+												<option bindonce ng-repeat="tag in charts.tags" bo-attr bo-attr-value="tag"></option>
+											</datalist>
+										</form>
+									</li>
+								</menu>
+
+								<span class="smallCopy">Данные предоставлены Last.fm</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="cell space"></div>
+
+				<div class="cell charts-table">
+					<!-- list -->
+					<div class="charts-table-wrap nano" nano-scroller="1">
+						<div class="nano-content">
+						<div class="charts-list">
+							<a href="" class="chart-item" bindonce ng-repeat="item in lastFm.artists" ng-click="lastFm.openArtist(item.name)">
+								<div class="table size-max">
+									<div class="cell cover"><div style="position:relative;height: 100%;">
+										<div class="covers">
+											<div class="cover-art-single" bo-style="{'background-image': 'url('+item.image[1]['#text']+')'}"></div>
+										</div>
+									</div></div>
+									<div class="cell about">
+										<div class="status"><i class="icon ion-play"></i></div>
+										<div class="title" bo-text="item.name"></div>
+									</div>
+								</div>
+							</a>
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!--albums-->
+			<div class="table charts-changer" ng-if="charts.tab==2">
+				<div class="cell charts-filter">
+					<div style="position:relative;height: 100%;">
+					<div class="nano" nano-scroller="1">
+						<div class="nano-content">
+							<div class="charts-filter-wrap">
+								
+							</div>
+						</div>
+					</div>
+					<div class="charts-filter-background" style="background-image:url('{{lastFm.currentArtist.image[4]['#text']}}')"></div>
+					</div>
+				</div>
+
+				<div class="cell space"></div>
+
+				<div class="cell charts-table">
+					<!-- list -->
+					<div class="charts-table-wrap nano" nano-scroller="1">
+						<div class="nano-content">
+							<div class="albums-list">
+								<a href="" class="album-item" ng-class="{'active' : lastFm.currentAlbum == -1}" ng-click="lastFm.openTopTracks()">
+									<div class="cover cover-icon"><i class="icon ion-ios7-star"></i></div>
+									<div class="title">Топ композиций</div>
+								</a>
+								<a href="" class="album-item" bindonce ng-repeat="(key,item) in lastFm.albums" ng-class="{'active' : lastFm.currentAlbum == key}" ng-click="lastFm.openAlbum(key)">
+									<div class="cover" bo-style="{'background-image': 'url('+item.image[2]['#text']+')'}"></div>
+									<div class="title" bo-text="item.name"></div>
+								</a>
+							</div>
+						<!--div class="charts-list">
+							<a href="" class="chart-item" ng-class="{'active' : lastFm.currentAlbum == -1}" ng-click="lastFm.openTopTracks()">
+								<div class="table size-max">
+									<div class="cell cover"><div style="position:relative;height: 100%;">
+										<div class="covers">
+											<i class="icon ion-ios7-star"></i>
+										</div>
+									</div></div>
+									<div class="cell about">
+										<div class="status"><i class="icon ion-play"></i></div>
+										<div class="title">Самые популярные треки</div>
+									</div>
+								</div>
+							</a>
+							<a href="" class="chart-item" bindonce ng-repeat="(key,item) in lastFm.albums" ng-class="{'active' : lastFm.currentAlbum == key}" ng-click="lastFm.openAlbum(key)">
+								<div class="table size-max">
+									<div class="cell cover"><div style="position:relative;height: 100%;">
+										<div class="covers">
+											<div class="cover-art-single cover-art-album" bo-style="{'background-image': 'url('+item.image[1]['#text']+')'}"></div>
+											<div class="album-vinil"></div>
+										</div>
+									</div></div>
+									<div class="cell about">
+										<div class="status"><i class="icon ion-play"></i></div>
+										<div class="title" bo-text="item.name"></div>
+									</div>
+								</div>
+							</a>
+						</div-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="loading-cover"><div class="cell">
+			<div id="facebookG"><div id="blockG_1" class="facebook_blockG"></div><div id="blockG_2" class="facebook_blockG"></div><div id="blockG_3" class="facebook_blockG"></div></div>
+		</div></div>
+	</aside>
+
+
+
+
+
+	<header class="table size-max" id="top-panel">
+		<div class="cell small-hide">
+			<div class="logotype">
+				<span class="avatar" style="background-image:url('{{user.current.photo_50}}')">
+					<a href="" ng-click="user.logout()" title="Выйти"><i class="icon ion-log-out"></i></a>
+				</span>
+			</div>
+		</div>
+		<div class="cell size-max">
+			<div class="wrap">
+				<audio ng-src="{{charts.current.url}}" id="player" preload></audio>
+				<div class="player">
+					<div class="control play" ng-class="{'active': charts.playing}">
+						<a href="" ng-hide="charts.playing" ng-click="charts.play()"><i class="icon ion-play"></i></a>
+						<a href="" ng-show="charts.playing" ng-click="charts.pause()"><i class="icon ion-pause"></i></a>
+					</div>
+					<div class="control prev">
+						<a href="" ng-hide="!charts.current.index" ng-click="charts.prev()"><i class="icon ion-skip-backward"></i></a>
+
+						<a  ng-show="!charts.current.index"><i class="icon ion-skip-backward"></i></a>
+					</div>
+					<div class="control next">
+						<a href="" ng-click="charts.next()" ng-hide="charts.current.index + 1 >= charts.items[charts.id].tracks.length"><i class="icon ion-skip-forward"></i></a>
+
+						<a ng-show="charts.current.index + 1 >= charts.items[charts.id].tracks.length"><i class="icon ion-skip-forward" ></i></a>
+					</div>
+					<div class="control position">
+						<div class="control-info">
+							<span class="pull-right" id="seekLeftTime"></span>
+							<a href="http://vk.com/dev/audio.search" target="_blank" style="font-size:11px;color:black;display: block;" ng-hide="charts.current.index==undefined" title="Мы не храним аудио файлы у нас на сервере. Вся музыка воспроизводиться с серверов Вконтакте, через открытое API.">Воспроизводиться с Вконтакте</a>
+						</div>
+						<input id="seek" type="range" min="0" max="0" value="0" ng-disabled="charts.current.index==undefined">
+					</div>
+					<div class="control volume">
+						<div class="control-info">
+							<i class="icon ion-ios7-volume-high pull-right"></i>
+							<i class="icon ion-ios7-volume-low"></i>
+						</div>
+						<input id="volume" type="range" min="0" max="10" value="10">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="cell"><div class="select-chart">
+			<i class="icon ion-arrow-down-b" ng-show="charts.view==''"></i>
+			<i class="icon ion-arrow-up-b" ng-hide="charts.view==''"></i>
+			<img ng-src="http://favicon.yandex.net/favicon/{{charts.chart.domain}}" alt="" class="favicon" />
+			<a href="" class="ajaxed" ng-click="charts.view=(charts.view=='' ? 'sidebar':'')">{{charts.chart.title}}</a>
+		</div></div>
+	</header>
+
+	<!--div class="sort-filter">
+		<div class="wrap">
+			<div class="table size-max">
+				<form class="cell">
+					<input type="search" placeholder="Отфильтровать песни..." />
+				</form>
+				<div class="cell sort-actions">
+					<span ng-class="{'active': charts.sort=='index'}">
+						<a href="" ng-click="charts.sort='index'; charts.sortDirection=!charts.sortDirection">По порядку</a>
+						<i class="icon ion-arrow-down-b" ng-hide="charts.sortDirection"></i>
+						<i class="icon ion-arrow-up-b" ng-show="charts.sortDirection"></i>
+					</span>
+					<span ng-class="{'active': charts.sort=='artist'}">
+						<a href="" ng-click="charts.sort='artist'; charts.sortDirection=!charts.sortDirection">По алфавиту</a>
+						<i class="icon ion-arrow-down-b" ng-hide="charts.sortDirection"></i>
+						<i class="icon ion-arrow-up-b" ng-show="charts.sortDirection"></i>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div-->
+
+	<main role="main">
+		<section class="playlist size-max">
+			<!-- | orderBy:charts.sort:charts.sortDirection-->
+			<article bindonce ng-repeat="(key,card) in charts.tracks" class="item item-status-{{card.status}}" ng-class="{'active': charts.current.index == key}"><div class="wrap"><div class="item-wrap">
+				<div class="cover">
+					<div bo-style="{'background-image': 'url('+card.art+')'}"></div>
+					<!--img bo-src="card.art" alt="" /-->
+				</div>
+				<div class="about">
+					<div class="actions">
+						<a ng-show="card.buy" ng-href="{{card.buy}}" target="_blank" title="Купить трек"><i class="icon ion-bag"></i></a>
+						<!--a href=""><i class="icon ion-arrow-down-c"></i></a-->
+						<a href="" title="Добавить в аудиозаписи (Вконтакте)" ng-show="card.vk.aid" ng-click="charts.addToVk(key)"><i class="icon ion-plus-round"></i></a>
+					</div>
+					<div class="warning">
+						<span class="notrack">Недоступно</span>
+					</div>
+					<div class="duration" ng-show="card.duration">
+						{{card.duration|duration}}
+					</div>
+					<div class="title">
+						<a href="" class="artist" bo-text="card.artist" ng-click="lastFm.openArtist(card.artist)"></a> &mdash; <span bo-text="card.title"></span>
+					</div>
+				</div>
+			</div></div><a href="" ng-click="charts.open(key)" class="link"></a></article>
+
+		</section>
+	</main>
+
+</div>
